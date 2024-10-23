@@ -58,6 +58,6 @@ jobs:
 
       - name: Deploy Frontend to Production
         working-directory: ./packages/web/teste
-        run: npx netlify-cli deploy --dir=build --site=55940732-ab52-4885-a761-45b35a37d4bb
+        run: npx netlify-cli deploy --dir=build --site=55940732-ab52-4885-a761-45b35a37d4bb --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
