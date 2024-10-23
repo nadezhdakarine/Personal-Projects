@@ -14,7 +14,7 @@ on:
           - both
 
 jobs:
-  deploy-api-dev:
+  deploy-api-prd:
     if: inputs.target == 'api' || inputs.target == 'both'
     runs-on: ubuntu-latest
     steps:
@@ -35,73 +35,11 @@ jobs:
 
       - name: Deploy Backend to DEV
         working-directory: ./packages/api
-        run: echo "Deploying api to DEV environment"
-
-  deploy-web-dev:
-    if: inputs.target == 'web' || inputs.target == 'both'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install Frontend Dependencies
-        working-directory: ./packages/web
-        run: npm install
-
-      - name: Build Frontend
-        working-directory: ./packages/web
-        run: npm run build
-
-      - name: Deploy Frontend to Netlify (DEV)
-        working-directory: ./packages/web
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: npx netlify-cli deploy --dir=build --site=$NETLIFY_DEV_SITE_ID
-
-  approve-prd:
-    needs: [deploy-backend-dev, deploy-frontend-dev]
-    runs-on: ubuntu-latest
-    if: inputs.target == 'api' || inputs.target == 'web' || inputs.target == 'both'
-    steps:
-      - name: Await Approval for PRD
-        uses: actions/manual-approval-action@v1
-        with:
-          prompt: "Approve PRD deployment?"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy-api-prd:
-    if: inputs.target == 'api' || inputs.target == 'both'
-    runs-on: ubuntu-latest
-    needs: [approve-prd]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install Backend Dependencies
-        working-directory: ./packages/api
-        run: npm install
-
-      - name: Run Backend Tests
-        working-directory: ./packages/api
-        run: npm test
-
-      - name: Deploy Backend to PRD
-        working-directory: ./packages/api
-        run: echo "Deploying api to PRD environment"
+        run: echo "Deploying Backend to PRD"
 
   deploy-web-prd:
     if: inputs.target == 'web' || inputs.target == 'both'
     runs-on: ubuntu-latest
-    needs: [approve-prd]
     steps:
       - uses: actions/checkout@v3
 
@@ -111,15 +49,15 @@ jobs:
           node-version: 20
 
       - name: Install Frontend Dependencies
-        working-directory: ./packages/web
+        working-directory: ./packages/web/teste
         run: npm install
 
       - name: Build Frontend
-        working-directory: ./packages/web
+        working-directory: ./packages/web/teste
         run: npm run build
 
-      - name: Deploy Frontend to Netlify (PRD)
-        working-directory: ./packages/web
+      - name: Deploy Frontend to Production
+        working-directory: ./packages/web/teste
+        run: npx netlify-cli deploy --dir=build --site=55940732-ab52-4885-a761-45b35a37d4bb --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: npx netlify-cli deploy --dir=build --site=$NETLIFY_PRD_SITE_ID
